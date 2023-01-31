@@ -2,6 +2,8 @@ extends layout
 
 block content
   h1= title
+  h5 Version 0.0.1-alpha
+  h5 Type below to search for a disease, you can click on entries to open their profile and view phenotype associations
   #searchbox
     form.form-inline.my-2.my-lg-0(onsubmit="return search()")
         input.form-control.mr-sm-2(type="search", placeholder="Search diseases", aria-label="Search", onkeyup="search()")
