@@ -1,8 +1,10 @@
 
 document.addEventListener('DOMContentLoaded', function() {
+      if(document.querySelector('input[type="search"]')) {
+
       document.querySelector('input[type="search"]').value = '';
-      document.getElementById("BLDPShow").checked = false;
-    });  
+            }
+          });  
 
 function search(e){
     let searchString = document.querySelector('input[type="search"]').value;
