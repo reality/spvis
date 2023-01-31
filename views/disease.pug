@@ -1,0 +1,90 @@
+extends layout
+
+block content
+  h1= title
+  h2
+    a(href='..') Back to search
+  .row
+    .col-sm-12
+      .card.mb-3
+        .card-header
+          h4 Phenotype Associations
+          .row
+            .col-sm-3
+              input(type="checkbox" name="BLDPShow" value="1")
+              label.ml-4 Compare with Literature Phenotypes
+            .col-sm-3
+              input(type="checkbox" name="laconicShow" value="2" checked)
+              label.ml-4 Show only laconic associations
+            .col-sm-3
+              input(type="checkbox" name="novelShow" value="3" checked)
+              label.ml-4 Show only novel associations
+            .col-sm-3
+              input(type="checkbox" name="significantShow" value="3" checked)
+              label.ml-4 Show only significant associations
+          .row
+            #hcount
+        .card-body
+          .row.mb-4
+            .col-sm-6.mb-3
+              .card.h-100
+                .card-header.h5
+                  | Social Media Digital Phenotype
+                .card-body
+                  .row.mb-2
+                    .col-sm-3
+                      b ID
+                    .col-sm-3
+                      b Label
+                    .col-sm-3
+                      b NPMI
+                    .col-sm-3
+                      b Classes
+                  -var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return disease.smdp[b].npmi - disease.smdp[a].npmi; });
+                  each id in sortedKeys
+                    - var item = disease.smdp[id]
+                    - var classes = [ item.laconic ? 'laconic' : 'nonlaconic', item.novel ? 'novel' : 'nonnovel', item.significant ? 'significant' : 'nonsignificant' ];
+                    .item(class=classes)
+                      .row.mb-2
+                        .col-sm-3
+                          p #{id}
+                        .col-sm-3
+                          p #{item.label}
+                        .col-sm-3
+                          p #{item.npmi}
+                        .col-sm-3
+                          p #{classes}
+            .col-sm-6.mb-3#bldp(style="display:none;")
+              .card.h-100
+                .card-header.h5
+                  | Biomedical Literature Digital Phenotype
+                .card-body
+                  each item, id in disease.bldp
+                    .row.mb-2
+                      .col-sm-4
+                        p #{id}
+                      .col-sm-4
+                        p #{item.label} 
+
+              script.
+                function checkBoxes() { 
+                  let source1 = document.querySelector('input[name="BLDPShow"]').checked;
+                  let laconic = document.querySelector('input[name="laconicShow"]').checked;
+                  let novel = document.querySelector('input[name="novelShow"]').checked;
+                  let significant = document.querySelector('input[name="significantShow"]').checked;
+
+                  var hiding = 0;
+
+                  if(source1) { document.getElementById('bldp').style.display = 'block'; } else { document.getElementById('bldp').style.display = 'none'; }
+                  if(laconic) { Array.from(document.getElementsByClassName('nonlaconic')).forEach((e) => { e.style.display = 'none';hiding++ }); } else { Array.from(document.getElementsByClassName('nonlaconic')).forEach((e) => { e.style.display = 'inline' }); }
+                  if(novel) { Array.from(document.getElementsByClassName('nonnovel')).forEach((e) => { e.style.display = 'none';hiding++ }); } else { Array.from(document.getElementsByClassName('nonnovel')).forEach((e) => { e.style.display = 'inline' }); }
+                    if(significant) { Array.from(document.getElementsByClassName('nonsignificant')).forEach((e) => { e.style.display = 'none';hiding++ }) } else { Array.from(document.getElementsByClassName('nonsignificant')).forEach((e) => { e.style.display = 'inline' }); }
+
+                  document.getElementById('hcount').innerHTML = 'Hiding ' + hiding + ' phenotypes'
+                }
+
+                document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+                  checkbox.addEventListener('change', checkBoxes);
+                });
+
+                checkBoxes();

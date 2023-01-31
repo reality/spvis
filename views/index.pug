@@ -2,4 +2,9 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  #searchbox
+    form.form-inline.my-2.my-lg-0(onsubmit="return search()")
+        input.form-control.mr-sm-2(type="search", placeholder="Search diseases", aria-label="Search", onkeyup="search()")
+  #results
+     
+
