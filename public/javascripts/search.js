@@ -1,12 +1,14 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-      if(document.querySelector('input[type="search"]')) {
+  if(document.querySelector('input[type="search"]')) {
+    document.querySelector('input[type="search"]').value = '';
+    }
+});  
 
-      document.querySelector('input[type="search"]').value = '';
-            }
-          });  
-
+let timeout = null;
 function search(e){
+  clearTimeout(timeout)
+  timeout = setTimeout(function() {
     let searchString = document.querySelector('input[type="search"]').value;
     if(searchString == '') { return; }
 
@@ -37,6 +39,7 @@ function search(e){
 
       results.innerHTML = table;
     });
+  }, 500);
 
-    return false;
-  }
+  return false;
+}
