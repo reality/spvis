@@ -51,7 +51,7 @@ block content
                   each id in sortedKeys
                     - var item = disease.smdp[id]
                     - var classes = [ item.laconic ? 'laconic' : 'nonlaconic', item.novel ? 'novel' : 'nonnovel', item.significant ? 'significant' : 'nonsignificant' ];
-                    .item(class=classes)
+                    .pitem(class=classes)
                       .row.mb-2
                         .col-sm-3
                           p 
@@ -95,12 +95,23 @@ block content
                   var hiding = 0;
 
                   if(source1) { document.getElementById('bldp').style.display = 'block'; } else { document.getElementById('bldp').style.display = 'none'; }
-                  if(laconic) { Array.from(document.getElementsByClassName('nonlaconic')).forEach((e) => { e.style.display = 'none';hiding++ }); } else { Array.from(document.getElementsByClassName('nonlaconic')).forEach((e) => { e.style.display = 'inline' }); }
-                  if(novel) { Array.from(document.getElementsByClassName('nonnovel')).forEach((e) => { e.style.display = 'none';hiding++ }); } else { Array.from(document.getElementsByClassName('nonnovel')).forEach((e) => { e.style.display = 'inline' }); }
-                    if(significant) { Array.from(document.getElementsByClassName('nonsignificant')).forEach((e) => { e.style.display = 'none';hiding++ }) } else { Array.from(document.getElementsByClassName('nonsignificant')).forEach((e) => { e.style.display = 'inline' }); }
 
+                  $('.pitem').each(function() {
+                    const cs = this.className.split(' ')
+                    var show = true
+                    if(laconic && cs.indexOf('nonlaconic') != -1) { show = false; }
+                    if(novel && cs.indexOf('nonnovel') != -1) { show = false; }
+                    if(significant && cs.indexOf('nonsignificant') != -1) { show = false; }
+
+                    if(show) { 
+                      this.style.display = 'inline'
+                    } else {
+                      this.style.display = 'none'
+                      hiding++
+                    }
+                  })
+                 
                   document.getElementById('hcount').innerHTML = 'Hiding ' + hiding + ' phenotypes'
-
                 }
 
                 document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {

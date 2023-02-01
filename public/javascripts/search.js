@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function search(e){
     let searchString = document.querySelector('input[type="search"]').value;
+    if(searchString == '') { return; }
 
     fetch('/search/' + searchString)
     .then(function(response) {
