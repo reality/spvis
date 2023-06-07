@@ -1,22 +1,18 @@
 
-document.addEventListener('DOMContentLoaded', function() {
-  if(document.querySelector('input[type="search"]')) {
-    document.querySelector('input[type="search"]').value = '';
-    }
-});  
 
 let timeout = null;
 function search(e){
   clearTimeout(timeout)
   timeout = setTimeout(function() {
     let searchString = document.querySelector('input[type="search"]').value;
-    if(searchString == '') { return; }
+    if(searchString == '' || e == '*') { searchString = '*'; }
 
     fetch('/search/' + searchString)
     .then(function(response) {
       return response.json();
     })
     .then(function(data) {
+    console.log(data)
       let results = document.getElementById('results');
 
       let table = `<table class="table">
@@ -27,6 +23,8 @@ function search(e){
           </tr>
         </thead>
         <tbody>`;
+
+console.log(typeof data); 
       data.forEach(function(item, key) {
         table += `<tr onclick="window.location.href='/disease/${item.id}'">
           <th scope="row">${item.id}</th>
@@ -43,3 +41,11 @@ function search(e){
 
   return false;
 }
+
+$(function() {
+  if(document.querySelector('input[type="search"]')) {
+    document.querySelector('input[type="search"]').value = '';
+  }
+
+  search('*');
+});  
