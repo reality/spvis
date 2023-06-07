@@ -62,5 +62,11 @@ router.get('/disease/:doid', function(req, res, next) {
   const d = profiles[req.params.doid]
   res.render('disease', { title: 'Social Media Digital Phenotype: ' + d.label + ' ('+d.id+')', disease: d })
 });
-
+router.get('/review/:doid', function(req, res, next) {
+  if(!_.has(profiles, req.params.doid)) {
+    return res.render('error', { 'message': 'Disease not found', 'status': 404 })
+  } 
+  const d = profiles[req.params.doid]
+  res.render('review', { title: 'Social Media Digital Phenotype: ' + d.label + ' ('+d.id+')', disease: d })
+});
 module.exports = router;
