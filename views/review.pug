@@ -1,0 +1,191 @@
+extends layout
+
+block content
+  h1= title
+  h2
+    a(href='..') Back to search
+  .row
+    .col-sm-12
+      .card.mb-3
+        .card-header
+          h4 Phenotype Associations
+          h5#hcount
+          .row
+            //.col-sm-4
+            //  .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
+            //    input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
+            //    label.ml-4 Show Biomedical and Literature Digital Phenotype (BDLP) associations
+            //    i.fas.fa-info-circle
+            .col-sm-2
+              .t(data-toggle="tooltip" title="Show only laconic phenotype associations. Laconic associations are those without any significant subclass association, i.e. they are the most specific significant associations." data-placement="top")
+                input#laconicShow(type="checkbox" name="laconicShow" value="2" checked)
+                label.ml-4 Show only laconic associations
+                i.fas.fa-info-circle
+            .col-sm-2
+              .t(data-toggle="tooltip" title="Show only novel phenotype associations. These are associations that have no equivalent or subclass in the biomedical and literature-derived digital phenotype, i.e. they are unique to the social media digital phenotype." data-placement="top")
+                input#novelShow(type="checkbox" name="novelShow" value="3" checked)
+                label.ml-4 Show only novel associations
+                i.fas.fa-info-circle
+            .col-sm-2
+              .t(data-toggle="tooltip" title="Show only significant assocations. These are associations with a significant q-score with a chosen acceptable false discovery rate of 0.005." data-placement="top")
+                input#significantShow(type="checkbox" name="significantShow" value="3" checked)
+                label.ml-4 Show only significant associations
+                i.fas.fa-info-circle
+        .card-body
+          .row.mb-4
+            .col-sm-12.mb-3
+              .card.h-100
+                .card-header.h5
+                  | Social Media Digital Phenotype
+                .card-body
+                  .row.mb-2
+                    .col-sm-2
+                      b ID
+                    .col-sm-3
+                      b Label
+                    .col-sm-1
+                      b NPMI
+                    .col-sm-2
+                      b Classes
+                    .col-sm-4
+                      b Review
+                  -var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return disease.smdp[b].npmi - disease.smdp[a].npmi; });
+                  each id in sortedKeys
+                    - var item = disease.smdp[id]
+                    - var classes = [ item.laconic ? 'laconic' : 'nonlaconic', item.novel ? 'novel' : 'nonnovel', item.significant ? 'significant' : 'nonsignificant' ];
+                    .pitem(class=classes)
+                      .row.mb-2
+                        .col-sm-2
+                          p 
+                            a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
+                        .col-sm-3
+                          p #{item.label}
+                        .col-sm-1
+                          p #{item.npmi.toPrecision(3)}
+                        .col-sm-2
+                          if classes.indexOf('significant') != -1
+                            i(class="fas fa-star fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Significant: the association had a significant q-score with an acceptable false discovery rate of 0.005." data-placement="top")
+                          if classes.indexOf('novel') != -1
+                            i(class="fas fa-link fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Novel: there is no equivalent or more specific association in the biomedical and literature derived associations." data-placement="top")
+                          if classes.indexOf('laconic') != -1
+                            i(class="fas fa-compress fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Laconic: there is no more specific significant association." data-placement="top")
+                        .col-sm-4
+                          .row
+                            .col-sm-6
+                              div What is the validity of this association?
+                            .col-sm-6
+                              select.form-control(value='') 
+                                option(value='') Select...
+                                option Known association
+                                option Known but underappreciated
+                                option Not established but feasible
+                                option Not established and unlikely
+                                option Not established and definitely wrong
+                          .row
+                            .col-sm-6
+                              p What kind of association is this?
+                            .col-sm-6
+                              select.form-control(value='')
+                                option(value='') Select...
+                                option Symptom
+                                option Comorbidity
+                                option Complication
+                                option Side-effect of treatment
+                                option Other associated phenotype
+                                option N/A
+                          .row
+                            .col-sm-6
+                              div Is this association discussed in the treatment guidelines for this disease?
+                            .col-sm-6
+                              select.form-control(value='')
+                                option(value='') Select...
+                                option Yes
+                                option No
+                                option Unknown
+                          .row
+                            .col-sm-6
+                              div How often is this association discussed in literature?
+                            .col-sm-6
+                              select.form-control(value='')
+                                option(value='') Select...
+                                option 1 - Never discussed
+                                option 2 - Appears in a few papers
+                                option 3
+                                option 4 - Frequently discussed
+                                option 5 - Almost always considered
+                          .row
+                            .col-sm-6
+                              p Do you consider this association in the course your clinical practice?
+                            .col-sm-6
+                                select.form-control(value='')
+                                  option(value='') Select...
+                                  option Yes
+                                  option No
+                                  option Unknown
+                          .row
+                              .col-sm-6
+                      br
+                      br
+
+            .col-sm-6.mb-3#bldp(style="display:none;")
+              .card.h-100
+                .card-header.h5
+                  | Biomedical Literature Digital Phenotype
+                .card-body
+                  .row.mb-2
+                    .col-sm-4
+                      b ID
+                    .col-sm-4
+                      b Label
+                  each item, id in disease.bldp
+                    .row.mb-2
+                      .col-sm-4
+                        p 
+                          a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
+                      .col-sm-4
+                        p #{item.label} 
+
+              script.
+                function checkBoxes() { 
+                  let source1 = document.querySelector('input[name="BLDPShow"]').checked;
+                  let laconic = document.querySelector('input[name="laconicShow"]').checked;
+                  let novel = document.querySelector('input[name="novelShow"]').checked;
+                  let significant = document.querySelector('input[name="significantShow"]').checked;
+
+                  var hiding = 0;
+
+                  if(source1) { document.getElementById('bldp').style.display = 'block'; } else { document.getElementById('bldp').style.display = 'none'; }
+
+                  $('.pitem').each(function() {
+                    const cs = this.className.split(' ')
+                    var show = true
+                    if(laconic && cs.indexOf('nonlaconic') != -1) { show = false; }
+                    if(novel && cs.indexOf('nonnovel') != -1) { show = false; }
+                    if(significant && cs.indexOf('nonsignificant') != -1) { show = false; }
+
+                    if(show) { 
+                      this.style.display = 'inline'
+                    } else {
+                      this.style.display = 'none'
+                      hiding++
+                    }
+                  })
+                 
+                  document.getElementById('hcount').innerHTML = 'Hiding ' + hiding + ' phenotypes'
+                }
+
+                document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+                  checkbox.addEventListener('change', checkBoxes);
+                });
+
+                $(document).ready(function() {
+                  $("#BLDPShow").prop('checked', false)
+                  $("#laconicShow").prop('checked', true)
+                  $("#novelShow").prop('checked', false)
+                  $("#significantShow").prop('checked', true)
+
+                  checkBoxes();
+                  $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+                });
+
+
