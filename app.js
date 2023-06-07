@@ -13,8 +13,9 @@ var app = express();
 var password = null
 const PASS_FILE = './password.txt'
 if(fs.existsSync(PASS_FILE)) {
-  password = fs.readFileSync(PASS_FILE, 'utf8').toString();
+  password = fs.readFileSync(PASS_FILE, 'utf8').toString().trim();
 }
+console.log(password)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
