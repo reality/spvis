@@ -11,11 +11,11 @@ block content
           h4 Phenotype Associations
           h5#hcount
           .row
-            //.col-sm-4
-            //  .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
-            //    input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
-            //    label.ml-4 Show Biomedical and Literature Digital Phenotype (BDLP) associations
-            //    i.fas.fa-info-circle
+            .col-sm-4(style='display:none;')
+              .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
+                input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
+                label.ml-4 Show Biomedical and Literature Digital Phenotype (BDLP) associations
+                i.fas.fa-info-circle
             .col-sm-2
               .t(data-toggle="tooltip" title="Show only laconic phenotype associations. Laconic associations are those without any significant subclass association, i.e. they are the most specific significant associations." data-placement="top")
                 input#laconicShow(type="checkbox" name="laconicShow" value="2" checked)
@@ -81,6 +81,7 @@ block content
                                 option Not established but feasible
                                 option Not established and unlikely
                                 option Not established and definitely wrong
+                              br
                           .row
                             .col-sm-6
                               p What kind of association is this?
@@ -92,7 +93,9 @@ block content
                                 option Complication
                                 option Side-effect of treatment
                                 option Other associated phenotype
+                                option Unknown
                                 option N/A
+                              br
                           .row
                             .col-sm-6
                               div Is this association discussed in the treatment guidelines for this disease?
@@ -102,6 +105,7 @@ block content
                                 option Yes
                                 option No
                                 option Unknown
+                              br
                           .row
                             .col-sm-6
                               div How often is this association discussed in literature?
@@ -113,6 +117,7 @@ block content
                                 option 3
                                 option 4 - Frequently discussed
                                 option 5 - Almost always considered
+                              br
                           .row
                             .col-sm-6
                               p Do you consider this association in the course your clinical practice?
@@ -122,8 +127,7 @@ block content
                                   option Yes
                                   option No
                                   option Unknown
-                          .row
-                              .col-sm-6
+                                br
                       br
                       br
 

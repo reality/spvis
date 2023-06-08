@@ -5,7 +5,7 @@ var _ = require('lodash')._;
 
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
-const profiles = require('../data/data.json')
+const { profiles, versionString } = require('../data/data.json')
 const stats = {
   diseases: 0,
   associations: 0,
@@ -34,11 +34,13 @@ _.each(profiles, (v, k) => {
   });
 });
 
+console.log(versionString)
+
 stats.unique = [...new Set(phens)].length;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Social Media Digital Phenotype', stats })
+  res.render('index', { title: 'Social Media Digital Phenotype', stats, versionString })
 });
 
 router.get('/search/:label', function(req, res, next) {
