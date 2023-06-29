@@ -24,7 +24,6 @@ function search(e){
         </thead>
         <tbody>`;
 
-console.log(typeof data); 
       data.forEach(function(item, key) {
         table += `<tr onclick="window.location.href='/disease/${item.id}'">
           <th scope="row">${item.id}</th>

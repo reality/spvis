@@ -8,9 +8,18 @@ block content
     .col-sm-12
       .card.mb-3
         .card-header
-          h4 Phenotype Associations
+          h4 Phenotype associations for #{disease.label}
           h5#hcount
-          .row
+          h5 Review Instructions: Please answer the three questions for each phenotype association using the drop-down boxes on the right. The form is not complete, and is currently only for demonstration purposes, please do not waste your time filling it out now!
+          p Definitions, notes, and instructions:
+          ul
+            li An association refers to a link between a disease and a phenotype.
+            li A phenotype is an observable trait in an organism.
+            li You can click on the link in the ID column to see a definition of the phenotype.
+            li These associations are sourced from textual analysis of social media and literature, and you are blinded as to their source and strength.
+            li The question concerning how often you recognise an association in your clinical practice refers to how often you recognise or consider the possibility of the phenotype when seeing a patient who has, or may have, the disease. It should not be influenced by how often you encounter the disease or possible cases of the disease in the course of your practice.
+            li Please use the notes section to provide any feedback, or to indicate any phenotype assocations you think are interesting or could be discussed or explored further.
+          .row(style='display:none;')
             .col-sm-4(style='display:none;')
               .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
                 input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
@@ -21,7 +30,7 @@ block content
                 input#laconicShow(type="checkbox" name="laconicShow" value="2" checked)
                 label.ml-4 Show only laconic associations
                 i.fas.fa-info-circle
-            .col-sm-2
+            .col-sm-2(style='display:none;')
               .t(data-toggle="tooltip" title="Show only novel phenotype associations. These are associations that have no equivalent or subclass in the biomedical and literature-derived digital phenotype, i.e. they are unique to the social media digital phenotype." data-placement="top")
                 input#novelShow(type="checkbox" name="novelShow" value="3" checked)
                 label.ml-4 Show only novel associations
@@ -35,24 +44,21 @@ block content
           .row.mb-4
             .col-sm-12.mb-3
               .card.h-100
-                .card-header.h5
-                  | Social Media Digital Phenotype
                 .card-body
                   .row.mb-2
                     .col-sm-2
                       b ID
                     .col-sm-3
                       b Label
-                    .col-sm-1
-                      b NPMI
-                    .col-sm-2
-                      b Classes
-                    .col-sm-4
+                    .col-sm-7
                       b Review
-                  -var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return disease.smdp[b].npmi - disease.smdp[a].npmi; });
+
+                  - for(let id in disease.bldp) {
+                  -  disease.smdp[id] = disease.bldp[id];
+                  - };
+                  - var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return Math.random() - Math.random(); });
                   each id in sortedKeys
                     - var item = disease.smdp[id]
-                    - var classes = [ item.laconic ? 'laconic' : 'nonlaconic', item.novel ? 'novel' : 'nonnovel', item.significant ? 'significant' : 'nonsignificant' ];
                     .pitem(class=classes)
                       .row.mb-2
                         .col-sm-2
@@ -60,24 +66,15 @@ block content
                             a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
                         .col-sm-3
                           p #{item.label}
-                        .col-sm-1
-                          p #{item.npmi.toPrecision(3)}
-                        .col-sm-2
-                          if classes.indexOf('significant') != -1
-                            i(class="fas fa-star fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Significant: the association had a significant q-score with an acceptable false discovery rate of 0.005." data-placement="top")
-                          if classes.indexOf('novel') != -1
-                            i(class="fas fa-link fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Novel: there is no equivalent or more specific association in the biomedical and literature derived associations." data-placement="top")
-                          if classes.indexOf('laconic') != -1
-                            i(class="fas fa-compress fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Laconic: there is no more specific significant association." data-placement="top")
-                        .col-sm-4
-                          .row
+                        .col-sm-7
+                          .row.align-content-center
                             .col-sm-6
-                              div What is the validity of this association?
+                              div Is this association established in literature, treatment guidelines, or policy discussing this disease?
                             .col-sm-6
                               select.form-control(value='') 
                                 option(value='') Select...
-                                option Known association
-                                option Known but underappreciated
+                                option Established and well recognised
+                                option Established but not well recognised
                                 option Not established but feasible
                                 option Not established and unlikely
                                 option Not established and definitely wrong
@@ -94,11 +91,10 @@ block content
                                 option Side-effect of treatment
                                 option Other associated phenotype
                                 option Unknown
-                                option N/A
                               br
-                          .row
+                          //.row
                             .col-sm-6
-                              div Is this association discussed in the treatment guidelines for this disease?
+                              div Is this association discussed in the treatment guidelines you use for this disease?
                             .col-sm-6
                               select.form-control(value='')
                                 option(value='') Select...
@@ -106,9 +102,9 @@ block content
                                 option No
                                 option Unknown
                               br
-                          .row
-                            .col-sm-6
-                              div How often is this association discussed in literature?
+                          //.row
+                          //  .col-sm-6
+                          //    div How often is this association discussed in literature?
                             .col-sm-6
                               select.form-control(value='')
                                 option(value='') Select...
@@ -120,35 +116,18 @@ block content
                               br
                           .row
                             .col-sm-6
-                              p Do you consider this association in the course your clinical practice?
+                              p How often do you recognise this association in the course your clinical practice for this disease?
                             .col-sm-6
                                 select.form-control(value='')
                                   option(value='') Select...
-                                  option Yes
-                                  option No
-                                  option Unknown
+                                  option 1 - Never
+                                  option 2 - Rarely
+                                  option 3 - Sometimes
+                                  option 4 - Often
+                                  option 5 - Very often
                                 br
                       br
                       br
-
-            .col-sm-6.mb-3#bldp(style="display:none;")
-              .card.h-100
-                .card-header.h5
-                  | Biomedical Literature Digital Phenotype
-                .card-body
-                  .row.mb-2
-                    .col-sm-4
-                      b ID
-                    .col-sm-4
-                      b Label
-                  each item, id in disease.bldp
-                    .row.mb-2
-                      .col-sm-4
-                        p 
-                          a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
-                      .col-sm-4
-                        p #{item.label} 
-
               script.
                 function checkBoxes() { 
                   let source1 = document.querySelector('input[name="BLDPShow"]').checked;
@@ -158,12 +137,12 @@ block content
 
                   var hiding = 0;
 
-                  if(source1) { document.getElementById('bldp').style.display = 'block'; } else { document.getElementById('bldp').style.display = 'none'; }
+                  //if(source1) { document.getElementById('bldp').style.display = 'block'; } else { document.getElementById('bldp').style.display = 'none'; }
 
                   $('.pitem').each(function() {
                     const cs = this.className.split(' ')
                     var show = true
-                    if(laconic && cs.indexOf('nonlaconic') != -1) { show = false; }
+                    if(cs.indexOf('nonlaconic') != -1) { show = false; }
                     if(novel && cs.indexOf('nonnovel') != -1) { show = false; }
                     if(significant && cs.indexOf('nonsignificant') != -1) { show = false; }
 
@@ -171,11 +150,11 @@ block content
                       this.style.display = 'inline'
                     } else {
                       this.style.display = 'none'
-                      hiding++
                     }
+                    hiding++
                   })
                  
-                  document.getElementById('hcount').innerHTML = 'Hiding ' + hiding + ' phenotypes'
+                  document.getElementById('hcount').innerHTML = 'Listing ' + hiding + ' phenotypes'
                 }
 
                 document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
@@ -183,7 +162,7 @@ block content
                 });
 
                 $(document).ready(function() {
-                  $("#BLDPShow").prop('checked', false)
+                  $("#BLDPShow").prop('checked', true)
                   $("#laconicShow").prop('checked', true)
                   $("#novelShow").prop('checked', false)
                   $("#significantShow").prop('checked', true)

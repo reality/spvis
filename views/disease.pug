@@ -8,9 +8,10 @@ block content
     .col-sm-12
       .card.mb-3
         .card-header
-          h4 Phenotype Associations
-          h5#hcount
-          .row
+          //h4 Phenotype Associations
+          h4 Association display is currently disabled to maintain reviewer blindness (sorry) - it will be back soon!
+          h5#hcount(style='display:none;')
+          .row(style='display:none;')
             .col-sm-4
               .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
                 input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
@@ -31,7 +32,7 @@ block content
                 input#significantShow(type="checkbox" name="significantShow" value="3" checked)
                 label.ml-4 Show only significant associations
                 i.fas.fa-info-circle
-        .card-body
+        .card-body(style='display:none;')
           .row.mb-4
             .col-sm-6.mb-3
               .card.h-100

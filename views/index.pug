@@ -4,12 +4,11 @@ block content
   h1= title
   .row
    .col-sm-6
-      h5 Interface version: 0.0.9-alpha
-      h5 Type below to search for a disease, you can click on entries to open their profile and view phenotype associations.
+      p Interface version: 0.0.9-alpha
+      p Type below to search for a disease, you can click on entries to open their profile and view phenotype associations.
    .col-sm-6
     #stats
-      br
-      p Associations version: #{versionString}
+      p SMDP version: #{versionString}
       p Diseases: #{stats.diseases} (#{stats.matched} matched to BLDP)
       p Associations: #{stats.associations} (#{stats.significant} significant, #{stats.novel} novel)
       p Unique Phenotypes: #{stats.unique}
