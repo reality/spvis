@@ -4,12 +4,22 @@ var router = express.Router();
 var _ = require('lodash')._;
 var fs = require('fs');
 
-
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const DATA_PATH = '../data/'
-const RESPONSE_PATH = DATA_PATH + '/responses/'
+const RESPONSE_PATH = DATA_PATH + 'responses/'
 const KEYS_PATH = DATA_PATH + 'keys.json'
+
+const responses = {};
+fs.readdirSync(RESPONSE_PATH).forEach(filename => {
+  if(filename.endsWith('.json')) {
+    const filePath = path.join(folderPath, filename);
+    const rawData = fs.readFileSync(filePath);
+    const data = JSON.parse(rawData);
+    const key = filename.slice(0, -5); // Remove the ".json" extension
+    responses[key] = data;
+  }
+});
 
 const { profiles, versionString } = require(DATA_PATH + 'data.json')
 const keys = require(KEYS_PATH)
@@ -65,11 +75,12 @@ router.get('/search/:label', function(req, res, next) {
 
 router.get('/disease/:doid', function(req, res, next) {
   if(!_.has(profiles, req.params.doid)) {
-    return res.render('error', { 'message': 'Disease not found', 'status': 404 })
+    return res.render('error', { 'message': 'Disease not found', error: {'status': 404} })
   } 
   const d = profiles[req.params.doid]
   res.render('disease', { title: 'Digital Phenotype Explorer: ' + d.label + ' ('+d.id+')', disease: d })
 });
+
 router.get('/review/:doid/:key', function(req, res, next) {
   if(!req.params.key) {
     return res.redirect('/disease/'+req.params.doid)
@@ -78,20 +89,29 @@ router.get('/review/:doid/:key', function(req, res, next) {
     return res.render('error', { 'message': 'Key not recognised. If you believe this to be an error then contact us.', error: { 'status': 403, stack: '' }})
   }
   if(!_.has(profiles, req.params.doid)) {
-    return res.render('error', { 'message': 'Disease not found', 'status': 404 })
+    return res.render('error', { 'message': 'Disease not found', error: {'status': 404} })
   } 
+
+  const id = req.params.key + '_' + req.params.doid;
+  var resp = {}
+  if(_.has(responses)) {
+    resp = responses[id];
+  }
+
   const d = profiles[req.params.doid]
-  res.render('review', { title: 'Digital Phenotype Review: ' + d.label + ' ('+d.id+')', disease: d })
+  res.render('review', { title: 'Digital Phenotype Review: ' + d.label + ' ('+d.id+')', disease: d, progress: resp })
 });
 
 router.post('review/:doid/:key/save', function(req, res, next) {
   if(!_.has(keys, req.params.key)) {
-    return res.render('error', { 'message': 'Disease not found', 'status': 403 })
+    return res.render('error', { 'message': 'Disease not found', error: {'status': 403} })
   }
-  fs.writeFile(RESPONSE_PATH + req.params.doid + '.json', JSON.stringify(req.body), (err) => {
-      if(err) throw err;
-    });
-req.body
+  const id = req.params.key + '_' + req.params.doid;
+  responses[id] = req.body
+
+  fs.writeFile(RESPONSE_PATH + req.params.key + '_' + req.params.doid + '.json', JSON.stringify(req.body), (err) => {
+    if(err) throw err;
+  });
 })
 
 
