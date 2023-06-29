@@ -10,6 +10,13 @@ block content
         .card-header
           //h4 Phenotype Associations
           h4 Association display is currently disabled to maintain reviewer blindness (sorry) - it will be back soon!
+          .row
+            .col-sm-12
+              p Enter key in the text box below and press submit to load the questionnaire for this disease: &nbsp;
+              .div.input-group
+                input#review_key.form-control.mb-3(style='width:30%' type='text', placeholder="Review key", aria-label="Review key", aria-describedby="basic-addon2")
+                .div.input-group-append
+                  button.btn.btn-primary-outline(type='button' onclick="javascript:loadReview()") Submit
           h5#hcount(style='display:none;')
           .row(style='display:none;')
             .col-sm-4
@@ -87,6 +94,11 @@ block content
                         p #{item.label} 
 
               script.
+                function loadReview() {
+                  const key = $('#review_key').val()
+                  let newLocation = window.location.href.replace('disease', 'review') + '/' + key
+                  window.location.href = newLocation;
+                }
                 function checkBoxes() { 
                   let source1 = document.querySelector('input[name="BLDPShow"]').checked;
                   let laconic = document.querySelector('input[name="laconicShow"]').checked;

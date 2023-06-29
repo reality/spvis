@@ -59,8 +59,9 @@ block content
                   - var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return Math.random() - Math.random(); });
                   each id in sortedKeys
                     - var item = disease.smdp[id]
+                    - var idz = id.replace(':','_')
                     .pitem(class=classes)
-                      .row.mb-2
+                      .row.mb-2(id=item.id+'_questions')
                         .col-sm-2
                           p 
                             a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
@@ -71,7 +72,7 @@ block content
                             .col-sm-6
                               div Is this association established in literature, treatment guidelines, or policy discussing this disease?
                             .col-sm-6
-                              select.form-control(value='') 
+                              select.form-control(id=idz+'_q1' value='' onchange='javascript:sync()') 
                                 option(value='') Select...
                                 option Established and well recognised
                                 option Established but not well recognised
@@ -83,7 +84,7 @@ block content
                             .col-sm-6
                               p What kind of association is this?
                             .col-sm-6
-                              select.form-control(value='')
+                              select.form-control(id=idz+'_q2' value='' onchange='javascript:sync()')
                                 option(value='') Select...
                                 option Symptom
                                 option Comorbidity
@@ -118,7 +119,7 @@ block content
                             .col-sm-6
                               p How often do you recognise this association in the course your clinical practice for this disease?
                             .col-sm-6
-                                select.form-control(value='')
+                                select.form-control(id=idz+'_q3' value='' onchange='javascript:sync()')
                                   option(value='') Select...
                                   option 1 - Never
                                   option 2 - Rarely
@@ -129,6 +130,32 @@ block content
                       br
                       br
               script.
+                var sortedKeys = !{JSON.stringify(sortedKeys)};
+                console.log(sortedKeys)
+                function sync() {
+                  var results = {}
+                  $.each(sortedKeys, function(i, id) {
+                    const idz = id.replace(':','_')
+                    const r = {
+                      q1: $('#'+idz+'_q1').val(),
+                      q2: $('#'+idz+'_q2').val(),
+                      q3: $('#'+idz+'_q3').val()
+                    }  
+                    if(r.q1 || r.q2 || r.q3) {
+                      results[id] = r;
+                    }
+                  });
+
+                  console.log(results)
+
+                  /*$.ajax({
+                      url: window.location.pathname + '/update', 
+                      type: 'POST',
+                      contentType: 'application/json',
+                      data: JSON.stringify(game)
+                  });*/
+                }
+
                 function checkBoxes() { 
                   let source1 = document.querySelector('input[name="BLDPShow"]').checked;
                   let laconic = document.querySelector('input[name="laconicShow"]').checked;

@@ -9,7 +9,7 @@ app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const DATA_PATH = '../data/'
 const RESPONSE_PATH = DATA_PATH + '/responses/'
-const KEYS_PATH = DATA_PATH + '/keys.json'
+const KEYS_PATH = DATA_PATH + 'keys.json'
 
 const { profiles, versionString } = require(DATA_PATH + 'data.json')
 const keys = require(KEYS_PATH)
@@ -75,7 +75,7 @@ router.get('/review/:doid/:key', function(req, res, next) {
     return res.redirect('/disease/'+req.params.doid)
   }
   if(!_.has(keys, req.params.key)) {
-    return res.render('error', { 'message': 'Key not recognised. If you believe this to be an error then contact us.', 'status': 403 })
+    return res.render('error', { 'message': 'Key not recognised. If you believe this to be an error then contact us.', error: { 'status': 403, stack: '' }})
   }
   if(!_.has(profiles, req.params.doid)) {
     return res.render('error', { 'message': 'Disease not found', 'status': 404 })
@@ -83,9 +83,10 @@ router.get('/review/:doid/:key', function(req, res, next) {
   const d = profiles[req.params.doid]
   res.render('review', { title: 'Digital Phenotype Review: ' + d.label + ' ('+d.id+')', disease: d })
 });
+
 router.post('review/:doid/:key/save', function(req, res, next) {
   if(!_.has(keys, req.params.key)) {
-    return res.render('error', { 'message': 'Key not recognised. If you believe this to be an error then contact us.', 'status': 403 })
+    return res.render('error', { 'message': 'Disease not found', 'status': 403 })
   }
   fs.writeFile(RESPONSE_PATH + req.params.doid + '.json', JSON.stringify(req.body), (err) => {
       if(err) throw err;
