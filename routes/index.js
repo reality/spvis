@@ -3,23 +3,26 @@ var app = express()
 var router = express.Router();
 var _ = require('lodash')._;
 var fs = require('fs');
+const path = require('path');
 
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const DATA_PATH = '../data/'
-const RESPONSE_PATH = DATA_PATH + 'responses/'
+const RESPONSE_PATH = 'data/responses/'
 const KEYS_PATH = DATA_PATH + 'keys.json'
 
 const responses = {};
+//try {
 fs.readdirSync(RESPONSE_PATH).forEach(filename => {
   if(filename.endsWith('.json')) {
-    const filePath = path.join(folderPath, filename);
+    const filePath = path.join(RESPONSE_PATH, filename);
     const rawData = fs.readFileSync(filePath);
     const data = JSON.parse(rawData);
     const key = filename.slice(0, -5); // Remove the ".json" extension
     responses[key] = data;
   }
 });
+//} catch(e) { console.log('nothing in responses'); }
 
 const { profiles, versionString } = require(DATA_PATH + 'data.json')
 const keys = require(KEYS_PATH)
@@ -94,7 +97,8 @@ router.get('/review/:doid/:key', function(req, res, next) {
 
   const id = req.params.key + '_' + req.params.doid;
   var resp = {}
-  if(_.has(responses)) {
+  console.log(responses)
+  if(_.has(responses, id)) {
     resp = responses[id];
   }
 
@@ -102,16 +106,31 @@ router.get('/review/:doid/:key', function(req, res, next) {
   res.render('review', { title: 'Digital Phenotype Review: ' + d.label + ' ('+d.id+')', disease: d, progress: resp })
 });
 
-router.post('review/:doid/:key/save', function(req, res, next) {
+router.post('/review/:doid/:key/update', function(req, res, next) {
   if(!_.has(keys, req.params.key)) {
     return res.render('error', { 'message': 'Disease not found', error: {'status': 403} })
   }
-  const id = req.params.key + '_' + req.params.doid;
-  responses[id] = req.body
 
-  fs.writeFile(RESPONSE_PATH + req.params.key + '_' + req.params.doid + '.json', JSON.stringify(req.body), (err) => {
+  const id = req.params.key + '_' + req.params.doid;
+
+  var version = 0
+  if(_.has(responses[id])) {
+    version = responses[id].version 
+  }
+
+  responses[id] = req.body
+  responses[id].version = version + 1
+
+  fs.writeFile('data/responses/' + req.params.key + '_' + req.params.doid + '.json', JSON.stringify(req.body), (err) => {
     if(err) throw err;
   });
+  if((version % 25) === 0) {
+    fs.writeFile('data/responses/backups/' + req.params.key + '_' + req.params.doid + '_' + version + '.json', JSON.stringify(responses[id]), (err) => {
+      if(err) throw err;
+    });
+  }
+
+  res.status(200).send('OK');
 })
 
 

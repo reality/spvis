@@ -3,7 +3,7 @@ extends layout
 block content
   h1= title
   h2
-    a(href='..') Back to search
+    a(href='/') Back to search
   .row
     .col-sm-12
       .card.mb-3
@@ -12,7 +12,7 @@ block content
           h4 Association display is currently disabled to maintain reviewer blindness (sorry) - it will be back soon!
           .row
             .col-sm-12
-              p Enter key in the text box below and press submit to load the questionnaire for this disease: &nbsp;
+              p Enter key in the text box below and press submit to load the clinical review questionnaire for this disease: &nbsp;
               .div.input-group
                 input#review_key.form-control.mb-3(style='width:30%' type='text', placeholder="Review key", aria-label="Review key", aria-describedby="basic-addon2")
                 .div.input-group-append

@@ -3,19 +3,21 @@ extends layout
 block content
   h1= title
   h2
-    a(href='..') Back to search
+    a(href='/') Back to search
   .row
     .col-sm-12
       .card.mb-3
         .card-header
           h4 Phenotype associations for #{disease.label}
           h5#hcount
-          h5 Review Instructions: Please answer the three questions for each phenotype association using the drop-down boxes on the right. The form is not complete, and is currently only for demonstration purposes, please do not waste your time filling it out now!
+          h5 Review Instructions: Please answer the three questions for each phenotype association using the drop-down boxes on the right. 
           p Definitions, notes, and instructions:
           ul
             li An association refers to a link between a disease and a phenotype.
             li A phenotype is an observable trait in an organism.
             li You can click on the link in the ID column to see a definition of the phenotype.
+            li The form will save automatically, you don't have to press anything special.
+            li You can come back and finish your effort between sessions, the content of the form will be saved if you refresh the page.
             li These associations are sourced from textual analysis of social media and literature, and you are blinded as to their source and strength.
             li The question concerning how often you recognise an association in your clinical practice refers to how often you recognise or consider the possibility of the phenotype when seeing a patient who has, or may have, the disease. It should not be influenced by how often you encounter the disease or possible cases of the disease in the course of your practice.
             li Please use the notes section to provide any feedback, or to indicate any phenotype assocations you think are interesting or could be discussed or explored further.
@@ -41,7 +43,10 @@ block content
                 label.ml-4 Show only significant associations
                 i.fas.fa-info-circle
         .card-body
-          .row.mb-4
+          .row.mb-4#loading
+            .col-sm-12
+              h3 Loading... The phenotypes will appear shortly...
+          .row.mb-4#content(style="display:none;")
             .col-sm-12.mb-3
               .card.h-100
                 .card-body
@@ -56,6 +61,17 @@ block content
                   - for(let id in disease.bldp) {
                   -  disease.smdp[id] = disease.bldp[id];
                   - };
+                  - function seedRandom(seed) {
+                  - var seedValue = 0;
+                  -    for (var i = 0; i < seed.length; i++) {
+                  -          seedValue += seed.charCodeAt(i);
+                  -            }
+                  -              Math.random = function() {
+                  -                  var x = Math.sin(seedValue++) * 10000;
+                  -                      return x - Math.floor(x);
+                  -                        };
+                  -                        }
+                  - seedRandom(420)
                   - var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return Math.random() - Math.random(); });
                   each id in sortedKeys
                     - var item = disease.smdp[id]
@@ -72,7 +88,7 @@ block content
                             .col-sm-6
                               div Is this association established in literature, treatment guidelines, or policy discussing this disease?
                             .col-sm-6
-                              select.form-control(id=idz+'_q1' value='' onchange='javascript:sync()') 
+                              select.form-control(id=idz+'_q1' value='')
                                 option(value='') Select...
                                 option Established and well recognised
                                 option Established but not well recognised
@@ -84,7 +100,7 @@ block content
                             .col-sm-6
                               p What kind of association is this?
                             .col-sm-6
-                              select.form-control(id=idz+'_q2' value='' onchange='javascript:sync()')
+                              select.form-control(id=idz+'_q2' value='')
                                 option(value='') Select...
                                 option Symptom
                                 option Comorbidity
@@ -119,7 +135,7 @@ block content
                             .col-sm-6
                               p How often do you recognise this association in the course your clinical practice for this disease?
                             .col-sm-6
-                                select.form-control(id=idz+'_q3' value='' onchange='javascript:sync()')
+                                select.form-control(id=idz+'_q3' value='')
                                   option(value='') Select...
                                   option 1 - Never
                                   option 2 - Rarely
@@ -131,30 +147,7 @@ block content
                       br
               script.
                 var sortedKeys = !{JSON.stringify(sortedKeys)};
-                console.log(sortedKeys)
-                function sync() {
-                  var results = {}
-                  $.each(sortedKeys, function(i, id) {
-                    const idz = id.replace(':','_')
-                    const r = {
-                      q1: $('#'+idz+'_q1').val(),
-                      q2: $('#'+idz+'_q2').val(),
-                      q3: $('#'+idz+'_q3').val()
-                    }  
-                    if(r.q1 || r.q2 || r.q3) {
-                      results[id] = r;
-                    }
-                  });
-
-                  console.log(results)
-
-                  /*$.ajax({
-                      url: window.location.pathname + '/update', 
-                      type: 'POST',
-                      contentType: 'application/json',
-                      data: JSON.stringify(game)
-                  });*/
-                }
+                var progress = !{JSON.stringify(progress)};
 
                 function checkBoxes() { 
                   let source1 = document.querySelector('input[name="BLDPShow"]').checked;
@@ -196,6 +189,39 @@ block content
 
                   checkBoxes();
                   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+                  $('select').val('');
+                  $.each(progress, function(idx, val) {
+                    idx = idx.replace(':','_')
+                    $('#'+idx+'_q1').val(val.q1)
+                    $('#'+idx+'_q2').val(val.q2)
+                    $('#'+idx+'_q3').val(val.q3)
+                  });
+
+                  $('select').change(function() {
+                    var results = {}
+                    $.each(sortedKeys, function(i, id) {
+                      const idz = id.replace(':','_')
+                      const r = {
+                        q1: $('#'+idz+'_q1').val(),
+                        q2: $('#'+idz+'_q2').val(),
+                        q3: $('#'+idz+'_q3').val()
+                      }  
+                      if(r.q1 || r.q2 || r.q3) {
+                        results[id] = r;
+                      }
+                    });
+
+                    $.ajax({
+                        url: window.location.pathname + '/update', 
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(results)
+                    });
+                  });
+
+                  $('#loading').hide();
+                  $('#content').show();
                 });
 
 
