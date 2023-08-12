@@ -8,19 +8,31 @@ block content
     .col-sm-12
       .card.mb-3
         .card-header
-          h4 Phenotype associations for #{disease.label}
+          h4 Clinical Review Page for #{disease.label}
           h5#hcount
-          h5 Review Instructions: Please answer the three questions for each phenotype association using the drop-down boxes on the right. 
-          p Definitions, notes, and instructions:
+          p Instructions: Please read the following guidance carefully. After this, please answer the three questions for each phenotype association using the drop-down boxes on the right, to the best of your knowledge, and without referring to external sources.
+          p Conditions: You should be a specialist in this disease with an active practise seeing patients with the disease in the UK, and be familiar with the treatment guidelines for the disease. 
+          p Definitions:
           ul
-            li An association refers to a link between a disease and a phenotype.
-            li A phenotype is an observable trait in an organism.
-            li You can click on the link in the ID column to see a definition of the phenotype.
-            li The form will save automatically, you don't have to press anything special.
-            li You can come back and finish your effort between sessions, the content of the form will be saved if you refresh the page.
-            li These associations are sourced from textual analysis of social media and literature, and you are blinded as to their source and strength.
-            li The question concerning how often you recognise an association in your clinical practice refers to how often you recognise or consider the possibility of the phenotype when seeing a patient who has, or may have, the disease. It should not be influenced by how often you encounter the disease or possible cases of the disease in the course of your practice.
-            li Please use the notes section to provide any feedback, or to indicate any phenotype assocations you think are interesting or could be discussed or explored further.
+            li A phenotype is an observable trait in an organism - in this case, humans.
+            li An association is a link between a disease and a phenotype.
+            li You can click on the link in the ID column to see a definition of the relevant phenotype in a new page.
+          p Saving progress:
+          ul 
+            li The form will save automatically, you don't have to press anything special to save your progress.
+            li You can come back and finish your answers later, the content of the form will be saved if you refresh the page.
+            li If you are answering the form on multiple devices, refresh the page before starting again on each device to ensure progress is not lost.  
+          p Questions guidance:
+          ul
+            li The question concerning how often you recognise an association in your clinical practice refers to how often you recognise or consider the possibility of the phenotype when seeing a patient with the condition above. It should not be influenced by how often you encounter the disease or possible cases of the disease in the course of your practice. For example, only use `rarely' when you rarely see patients with that phenotype in that disease cohort, not when you rarely see patients with that condition.
+            li If the association is only valid for a sub-type of the disease (e.g. only in a genetic etiology, but not in sporadic cases), please answer as you would for the relevant disease sub-type.
+            li If multiple types of association are appropriate, pick the one you feel fits best. Other associated phenotype can also be suitable in more complicated cases, e.g. where the phenotype is associated with a disease mimic.
+          p Other notes:
+          ul
+            li Refer to the participant information sheet for more information about the purpose of the study and associated information.
+            li If you have any questions or feedback, please contact the study contact (the person who issued your review key).
+            li Do not share your review key - if you want to get someone else to review a disease, please ask the study contact to provision them a new key.
+            li Please use Firefox, Google Chrome, or Chromium to respond to the form.
           .row(style='display:none;')
             .col-sm-4(style='display:none;')
               .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
@@ -51,7 +63,9 @@ block content
               .card.h-100
                 .card-body
                   .row.mb-2
-                    .col-sm-2
+                    .col-sm-1
+                      b Count
+                    .col-sm-1
                       b ID
                     .col-sm-3
                       b Label
@@ -73,12 +87,16 @@ block content
                   -                        }
                   - seedRandom(420)
                   - var sortedKeys = Object.keys(disease.smdp).sort(function (a, b) { return Math.random() - Math.random(); });
+                  - var c = 0
                   each id in sortedKeys
+                    - c++
                     - var item = disease.smdp[id]
                     - var idz = id.replace(':','_')
                     .pitem(class=classes)
                       .row.mb-2(id=item.id+'_questions')
-                        .col-sm-2
+                        .col-sm-1
+                          p #{c}
+                        .col-sm-1
                           p 
                             a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
                         .col-sm-3
@@ -102,9 +120,9 @@ block content
                             .col-sm-6
                               select.form-control(id=idz+'_q2' value='')
                                 option(value='') Select...
-                                option Symptom
+                                option Symptom or sign
                                 option Comorbidity
-                                option Complication
+                                option Complication or can be sequel of
                                 option Side-effect of treatment
                                 option Other associated phenotype
                                 option Unknown
@@ -161,10 +179,10 @@ block content
 
                   $('.pitem').each(function() {
                     const cs = this.className.split(' ')
-                    var show = true
-                    if(cs.indexOf('nonlaconic') != -1) { show = false; }
+                    const show = true
+                    /*if(cs.indexOf('nonlaconic') != -1) { show = false; }
                     if(novel && cs.indexOf('nonnovel') != -1) { show = false; }
-                    if(significant && cs.indexOf('nonsignificant') != -1) { show = false; }
+                    if(significant && cs.indexOf('nonsignificant') != -1) { show = false; }*/
 
                     if(show) { 
                       this.style.display = 'inline'
@@ -193,6 +211,14 @@ block content
                   $('select').val('');
                   $.each(progress, function(idx, val) {
                     idx = idx.replace(':','_')
+                    if(val.q2 == 'Can be sequel of' || val.q2 == 'Complication') {
+                      val.q2 = 'Complication or can be sequel of' 
+                      console.log('woo')
+                      }
+                    if(val.q2 == 'Symptom') {
+                      val.q2 = 'Symptom or sign'
+                      console.log('woo')
+                      }
                     $('#'+idx+'_q1').val(val.q1)
                     $('#'+idx+'_q2').val(val.q2)
                     $('#'+idx+'_q3').val(val.q3)

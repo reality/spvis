@@ -97,7 +97,6 @@ router.get('/review/:doid/:key', function(req, res, next) {
 
   const id = req.params.key + '_' + req.params.doid;
   var resp = {}
-  console.log(responses)
   if(_.has(responses, id)) {
     resp = responses[id];
   }
@@ -114,18 +113,20 @@ router.post('/review/:doid/:key/update', function(req, res, next) {
   const id = req.params.key + '_' + req.params.doid;
 
   var version = 0
-  if(_.has(responses[id])) {
+  if(_.has(responses, id)) {
     version = responses[id].version 
   }
 
   responses[id] = req.body
   responses[id].version = version + 1
 
-  fs.writeFile('data/responses/' + req.params.key + '_' + req.params.doid + '.json', JSON.stringify(req.body), (err) => {
+  fs.writeFile('data/responses/' + req.params.key + '_' + req.params.doid + '.json', JSON.stringify(responses[id]), (err) => {
+    console.log(responses[id])
     if(err) throw err;
   });
   if((version % 25) === 0) {
     fs.writeFile('data/responses/backups/' + req.params.key + '_' + req.params.doid + '_' + version + '.json', JSON.stringify(responses[id]), (err) => {
+      console.log('saved backup for ' + id);
       if(err) throw err;
     });
   }

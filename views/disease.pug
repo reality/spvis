@@ -8,17 +8,17 @@ block content
     .col-sm-12
       .card.mb-3
         .card-header
-          //h4 Phenotype Associations
-          h4 Association display is currently disabled to maintain reviewer blindness (sorry) - it will be back soon!
+          h4 Phenotype Associations
+          //h4 Association display is currently disabled to maintain reviewer blindness (sorry) - it will be back soon!
           .row
             .col-sm-12
-              p Enter key in the text box below and press submit to load the clinical review questionnaire for this disease: &nbsp;
+              p If you are a clinical reviewer, enter key in the text box below and press submit to load the clinical review questionnaire for this disease: &nbsp;
               .div.input-group
                 input#review_key.form-control.mb-3(style='width:30%' type='text', placeholder="Review key", aria-label="Review key", aria-describedby="basic-addon2")
                 .div.input-group-append
                   button.btn.btn-primary-outline(type='button' onclick="javascript:loadReview()") Submit
-          h5#hcount(style='display:none;')
-          .row(style='display:none;')
+          h5#hcount
+          .row
             .col-sm-4
               .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
                 input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
@@ -39,7 +39,7 @@ block content
                 input#significantShow(type="checkbox" name="significantShow" value="3" checked)
                 label.ml-4 Show only significant associations
                 i.fas.fa-info-circle
-        .card-body(style='display:none;')
+        .card-body
           .row.mb-4
             .col-sm-6.mb-3
               .card.h-100
@@ -75,7 +75,7 @@ block content
                             i(class="fas fa-link fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Novel: there is no equivalent or more specific association in the biomedical and literature derived associations." data-placement="top")
                           if classes.indexOf('laconic') != -1
                             i(class="fas fa-compress fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Laconic: there is no more specific significant association." data-placement="top")
-            .col-sm-6.mb-3#bldp(style="display:none;")
+            .col-sm-6.mb-3#bldp
               .card.h-100
                 .card-header.h5
                   | Biomedical Literature Digital Phenotype
