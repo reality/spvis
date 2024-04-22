@@ -9,19 +9,33 @@ block content
       .card.mb-3
         .card-header
           h4 Phenotype Associations
-          //h4 Association display is currently disabled to maintain reviewer blindness (sorry) - it will be back soon!
           .row
-            .col-sm-12
-              p If you are a clinical reviewer, enter key in the text box below and press submit to load the clinical review questionnaire for this disease: &nbsp;
+            //.col-sm-12
+              p If you are a reviewer, enter key in the text box below and press submit to load the clinical review questionnaire for this disease: &nbsp;
               .div.input-group
                 input#review_key.form-control.mb-3(style='width:30%' type='text', placeholder="Review key", aria-label="Review key", aria-describedby="basic-addon2")
                 .div.input-group-append
                   button.btn.btn-primary-outline(type='button' onclick="javascript:loadReview()") Submit
+            .col-sm-12
+              b Icons Key
+              br
+              p(class="fas fa-star fa-lg px-20 mx-3") 
+              span Significant: the association had a significant q-score with an acceptable false discovery rate of 0.0005.
+              br
+              i(class="fas fa-link fa-lg px-20 mx-3") 
+              span Novel: there is no equivalent or more specific association in the biomedical and literature derived associations.
+              br
+              p(class="fas fa-compress fa-lg px-20 mx-3") 
+              span Laconic: there is no more specific significant association.
+              br
+              p(class="fas fa-spinner fa-lg px-20 mx-3") 
+              span HPOA: Association is included in the HPOA annotations database (version 2024-04-19).
+
           h5#hcount
           .row
             .col-sm-4
               .t(data-toggle="tooltip" title="This shows the biomedical and literature-derived digital phenotype on the right for comparison." data-placement="top")
-                input#BLDPShow(type="checkbox" name="BLDPShow" value="1") 
+                input#BDLPShow(type="checkbox" name="BDLPShow" value="1" checked) 
                 label.ml-4 Show Biomedical and Literature Digital Phenotype (BDLP) associations
                 i.fas.fa-info-circle
             .col-sm-2
@@ -44,7 +58,7 @@ block content
             .col-sm-6.mb-3
               .card.h-100
                 .card-header.h5
-                  | Social Media Digital Phenotype
+                  | Social Media Phenotype
                 .card-body
                   .row.mb-2
                     .col-sm-3
@@ -70,11 +84,13 @@ block content
                           p #{item.npmi}
                         .col-sm-3
                           if classes.indexOf('significant') != -1
-                            i(class="fas fa-star fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Significant: the association had a significant q-score with an acceptable false discovery rate of 0.005." data-placement="top")
+                            i(class="fas fa-star fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Significant: the association had a significant q-score with an acceptable false discovery rate of 0.0005." data-placement="top")
                           if classes.indexOf('novel') != -1
                             i(class="fas fa-link fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Novel: there is no equivalent or more specific association in the biomedical and literature derived associations." data-placement="top")
                           if classes.indexOf('laconic') != -1
                             i(class="fas fa-compress fa-lg px-20 mx-3" data-toggle="tooltip" data-title="Laconic: there is no more specific significant association." data-placement="top")
+                          if disease.hpoa.indexOf(id) != -1
+                            i(class="fas fa-spinner fa-lg px-20 mx-3" data-toggle="tooltip" data-title="HPOA: Association is included in the HPOA annotations." data-placement="top")
             .col-sm-6.mb-3#bldp
               .card.h-100
                 .card-header.h5
@@ -85,6 +101,8 @@ block content
                       b ID
                     .col-sm-4
                       b Label
+                    .col-sm-4
+                      b Classes
                   each item, id in disease.bldp
                     .row.mb-2
                       .col-sm-4
@@ -92,6 +110,9 @@ block content
                           a(href='https://www.ebi.ac.uk/ols/ontologies/hp/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F'+id.replace(':','_')+'&lang=en&viewMode=PreferredRoots&siblings=false' target="_blank") #{id}
                       .col-sm-4
                         p #{item.label} 
+                      .col-sm-4
+                        if disease.hpoa.indexOf(id) != -1
+                          i(class="fas fa-spinner fa-lg px-20 mx-3" data-toggle="tooltip" data-title="HPOA: Association is included in the HPOA annotations." data-placement="top")
 
               script.
                 function loadReview() {
@@ -100,7 +121,7 @@ block content
                   window.location.href = newLocation;
                 }
                 function checkBoxes() { 
-                  let source1 = document.querySelector('input[name="BLDPShow"]').checked;
+                  let source1 = document.querySelector('input[name="BDLPShow"]').checked;
                   let laconic = document.querySelector('input[name="laconicShow"]').checked;
                   let novel = document.querySelector('input[name="novelShow"]').checked;
                   let significant = document.querySelector('input[name="significantShow"]').checked;
@@ -132,7 +153,7 @@ block content
                 });
 
                 $(document).ready(function() {
-                  $("#BLDPShow").prop('checked', false)
+                  $("#BDLPShow").prop('checked', true)
                   $("#laconicShow").prop('checked', true)
                   $("#novelShow").prop('checked', false)
                   $("#significantShow").prop('checked', true)
