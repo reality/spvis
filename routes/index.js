@@ -33,11 +33,12 @@ const stats = {
   significant: 0,
   unique: 0,
   matched: 0,
+  novsig: 0,
 };
 var phens = []
 _.each(profiles, (v, k) => {
   stats.diseases++;
-  if(Object.keys(v.bldp).length > 0) {
+  if(v.mappings && Object.keys(v.mappings).length > 0) {
     stats.matched++;
   } 
 
@@ -47,8 +48,11 @@ _.each(profiles, (v, k) => {
     if(vv.significant) {
       stats.significant++;
     }
-    if(vv.novel) {
+    if(vv.novel && v.mappings && Object.keys(v.mappings).length > 0) {
       stats.novel++;
+      if(vv.significant) {
+        stats.novsig++
+      }
     }
   });
 });

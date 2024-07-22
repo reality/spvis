@@ -10,7 +10,8 @@ block content
     #stats
       p SMP version: #{versionString}
       p Diseases: #{stats.diseases} (#{stats.matched} matched to BDLP)
-      p Associations: #{stats.associations} (#{stats.significant} significant, #{stats.novel} novel)
+      p Associations: #{stats.associations} (#{stats.significant} significant)
+      p BDLP match: #{stats.novel} novel associations, of which #{stats.novsig} significant
       p Unique Phenotypes: #{stats.unique}
   #searchbox
     form.form-inline.my-2.my-lg-0(onsubmit="return search()")
